@@ -5,9 +5,13 @@ using UnityEngine;
 public class MapDisplay : MonoBehaviour
 {
     public Renderer textureRenderer;
+    public float baseWidth = 15;
+    public float baseHeight = 15;
 
     public void DrawNoiseMap(float[,] noiseMap)
     {
+
+        
         int width = noiseMap.GetLength(0);
         int height = noiseMap.GetLength(1);
 
@@ -28,7 +32,9 @@ public class MapDisplay : MonoBehaviour
         texture.Apply();
 
         textureRenderer.sharedMaterial.mainTexture = texture;
-        textureRenderer.transform.localScale = new Vector3(width, 1, height);
-                
+        if (width < height)
+            textureRenderer.transform.localScale = new Vector3(baseWidth * width / height, 1, baseHeight);
+        else 
+            textureRenderer.transform.localScale = new Vector3(baseWidth, 1, baseHeight * height / width);
     }
 }
