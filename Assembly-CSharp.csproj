@@ -60,13 +60,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\Block.cs" />
+    <Compile Include="Assets\Scripts\Other\CamHandler.cs" />
+    <Compile Include="Assets\Scripts\Other\Fader.cs" />
+    <Compile Include="Assets\Scripts\Other\Intro.cs" />
+    <Compile Include="Assets\Scripts\Other\ValueUpdater.cs" />
     <Compile Include="Assets\Scripts\Player\MovementController.cs" />
-    <Compile Include="Assets\Scripts\ValueUpdater.cs" />
-    <Compile Include="Assets\Scripts\World\CamHandler.cs" />
+    <Compile Include="Assets\Scripts\World\Block.cs" />
     <Compile Include="Assets\Scripts\World\MapDisplay.cs" />
     <Compile Include="Assets\Scripts\World\MapGenerator.cs" />
     <Compile Include="Assets\Scripts\World\Noise.cs" />
+    <Compile Include="Assets\Scripts\World\Superblock.cs" />
     <Compile Include="Assets\Scripts\World\WorldGenerator.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
       <HintPath>C:/Users/Sam/Downloads/World Gen/Library/ScriptAssemblies/Unity.TextMeshPro.Editor.dll</HintPath>

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Globalization;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +13,8 @@ public class MapGenerator : MonoBehaviour
     public int octaves;
     public float persistance;
     public float lacunarity;
-
+    public float maxNoiseHeight;
+    public float minNoiseHeight;
 
     public int seed;
     public Vector2 offset;
@@ -48,8 +50,7 @@ public class MapGenerator : MonoBehaviour
     }
     public void SetScale(string scale)
     {
-        float x;
-        float.TryParse(scale, out x);
+        float x = float.Parse(scale, CultureInfo.InvariantCulture.NumberFormat);
         if (x <= 0)
             x = 1;
         noiseScale = x;
@@ -70,18 +71,30 @@ public class MapGenerator : MonoBehaviour
             x = 1;
         this.octaves = x;
     }
+    public void SetMinNoiseHeight(string height)
+    {
+        float x = float.Parse(height, CultureInfo.InvariantCulture.NumberFormat);
+        if (x <= 0)
+            x = 1;
+        minNoiseHeight = x;
+    }
+    public void SetMaxNoiseHeight(string height)
+    {
+        float x = float.Parse(height, CultureInfo.InvariantCulture.NumberFormat);
+        if (x <= 0)
+            x = 1;
+        maxNoiseHeight = x;
+    }
     public void SetPersistance(string persistance)
     {
-        float x;
-        float.TryParse(persistance, out x);
+        float x = float.Parse(persistance, CultureInfo.InvariantCulture.NumberFormat);
         if (x <= 0)
             x = 1;
         this.persistance = x;
     }
     public void SetLacunarity(string lacunarity)
     {
-        float x;
-        float.TryParse(lacunarity, out x);
+        float x = float.Parse(lacunarity, CultureInfo.InvariantCulture.NumberFormat);
         if (x <= 0)
             x = 1;
         this.lacunarity = x;
@@ -128,12 +141,20 @@ public class MapGenerator : MonoBehaviour
         this.fill = fill;
     }
 
+    void Awake()
+    {
+        seed = Random.Range(-10000, 10000);
+    }
 
+    public float[,] GenerateSuperblockMap(Vector2 offset)
+    {
+        return Noise.GenerateNoiseMap(12, 12, seed, noiseScale, octaves, minNoiseHeight, maxNoiseHeight, persistance, lacunarity, new Vector2(offset.x -1, offset.y -1));
+    }
 
     public void GenerateMap()
     {
 
-        float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed, noiseScale, octaves, persistance, lacunarity, offset);
+        float[,] noiseMap = Noise.GenerateNoiseMap(mapWidth, mapHeight, seed, noiseScale, octaves, minNoiseHeight, maxNoiseHeight, persistance, lacunarity, offset);
 
         WorldGenerator generator = FindObjectOfType<WorldGenerator>();
         GameObject Map = GetComponent<MapDisplay>().textureRenderer.gameObject;
@@ -142,14 +163,13 @@ public class MapGenerator : MonoBehaviour
         {
             if (!Map.activeSelf)
                 Map.SetActive(true);
-            MapDisplay display = FindObjectOfType<MapDisplay>();
-            display.DrawNoiseMap(noiseMap);
+            GetComponent<MapDisplay>().DrawNoiseMap(noiseMap);
             if (!createWorld && GameObject.FindGameObjectWithTag("Block"))
                 generator.DestroyBlocks();
         }
         else
         {
-            GetComponent<MapDisplay>().textureRenderer.gameObject.SetActive(false);
+            Map.SetActive(false);
         }
         if (createWorld)
             generator.GenerateWorld(noiseMap, amplification, fill, depth);

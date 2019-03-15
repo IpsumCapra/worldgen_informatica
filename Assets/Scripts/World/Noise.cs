@@ -1,10 +1,11 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
 public static class Noise
 {
-    public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, int seed, float scale, int octaves, float persistance, float lacunarity, Vector2 offset)
+    public static float[,] GenerateNoiseMap(int mapWidth, int mapHeight, int seed, float scale, int octaves, float minNoiseHeight, float maxNoiseHeight, float persistance, float lacunarity, Vector2 offset)
     {
         float[,] noiseMap = new float[mapWidth, mapHeight];
 
@@ -17,13 +18,6 @@ public static class Noise
             octaveOffsets[i] = new Vector2(OffsetX, OffsetY);
         }
 
-
-        if (scale <= 0)
-            scale = 0.0001f;
-
-        float maxNoiseHeight = float.MinValue;
-        float minNoiseHeight = float.MaxValue;
-
         for (int y = 0; y < mapHeight; y++)
         {
             for (int x = 0; x < mapWidth; x++)
@@ -34,8 +28,8 @@ public static class Noise
                 for (int i = 0; i < octaves; i++)
                 {
                     
-                    float sampleX = (x - mapWidth / 2) / scale * frequency + octaveOffsets[i].x * frequency + Mathf.Round(offset.x) * frequency;
-                    float sampleY = (y - mapHeight / 2) / scale * frequency + octaveOffsets[i].y * frequency + Mathf.Round(offset.y) * frequency;
+                    float sampleX = (x + offset.x - mapWidth / 2) / scale * frequency + octaveOffsets[i].x * frequency;
+                    float sampleY = (y + offset.y - mapHeight / 2) / scale * frequency + octaveOffsets[i].y * frequency;
 
                     float perlinValue = Mathf.PerlinNoise(sampleX, sampleY);
                     noiseHeight += perlinValue * amplitude;
@@ -45,13 +39,13 @@ public static class Noise
                 }
 
                 if (noiseHeight > maxNoiseHeight)
-                    maxNoiseHeight = noiseHeight;
+                    noiseHeight = maxNoiseHeight;
                 else if (noiseHeight < minNoiseHeight)
-                    minNoiseHeight = noiseHeight;
-
+                    noiseHeight = minNoiseHeight;
                 noiseMap[x, y] = noiseHeight;
             }
         }
+        //iets dat mn array weer klein maakt.
 
         for (int y = 0; y < mapHeight; y++)
         {
